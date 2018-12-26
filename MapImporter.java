@@ -88,7 +88,9 @@ public class MapImporter {
 		}
 
 		public ArrayList<ArrayList<String>> getMap(int fileNo) {
-			return mFileContents.get(fileNo);
+			ArrayList<ArrayList<String>> mapChoice = new ArrayList<ArrayList<String>>();
+			mapChoice = mFileContents.get(fileNo);
+			return mapChoice;
 		}
 
 }
