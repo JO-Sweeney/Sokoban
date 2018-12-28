@@ -13,13 +13,16 @@ public class Game {
 	private ArrayList<ArrayList<String>> mCharMap;
 	private ArrayList<ArrayList<MoveableObject>> mObjectMap;
 	private MapImporter mMapImporter;
-	
+	private TileTracker mTracker;
 	
 	public Game() {
 		setStringMap();
+	
 		setObjectList();
-
+		mTracker = new TileTracker(mObjectMap);
+		
 		setGrid();
+		
 	}
 	
 	public void setStringMap() {
@@ -52,7 +55,7 @@ public class Game {
 						lineArray.add(new Wall());
 						break;
 					case ".":
-						lineArray.add(new Diamond());
+						lineArray.add(new Floor())	;				//set as floor - diamond = true
 						break;
 					case "*":
 						lineArray.add(new Crate());
@@ -197,6 +200,8 @@ public class Game {
 					
 					mObjectMap.get(playerY).set(playerX, placeholder2);
 					
+					mTracker.ChangeCratePos(crateX, crateY, crateNewX, crateNewY);
+					
 				}else {
 					//Do not move
 				}
@@ -212,7 +217,6 @@ public class Game {
 
 		
 		}//End of if, if conditions aren't met then don't do anything
-		System.out.println(playerNewX + "," + playerNewY);
 	}
 	
 	
@@ -323,7 +327,6 @@ public class Game {
 					if(!"class GridTest.Crate".equals(objectRightClass)) {
 							
 							safeToMove = true;
-							System.out.println("right condition met");
 					}
 				}
 			}
