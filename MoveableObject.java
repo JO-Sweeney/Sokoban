@@ -7,7 +7,6 @@ public class MoveableObject {
 	
 	protected String mImagePath;
 	protected ImageView mImageView;
-	private boolean mIsDiamond = true;			//Diamond is just a special type of floor
 	
 	public MoveableObject(){
 	}
@@ -32,9 +31,4 @@ public class MoveableObject {
 		public ImageView getImageView() {
 			return mImageView;
 		}
-		
-		public boolean isDiamond() {
-			return mIsDiamond;
-		}
-		
 }

@@ -55,7 +55,7 @@ public class Game {
 						lineArray.add(new Wall());
 						break;
 					case ".":
-						lineArray.add(new Floor())	;				//set as floor - diamond = true
+						lineArray.add(new Diamond())	;				//set as floor - diamond = true
 						break;
 					case "*":
 						lineArray.add(new Crate());
@@ -136,7 +136,7 @@ public class Game {
 		int playerNewY = playerY;		//same as above
 		
 		if(collisionDetect(direction, playerX, playerY)) {	//If collision says that movement is acceptable, then make changes
-		
+			
 			switch(direction) {
 			
 			case "up":				
@@ -159,10 +159,14 @@ public class Game {
 				playerNewY = playerY;
 				break;
 			}
-		
+			
 			MoveableObject placeholder = new MoveableObject();
 			placeholder = mObjectMap.get(playerNewY).get(playerNewX);									//Get object we want to swap with player
 			
+			if(placeholder.getClass().toString().equals("class GridTest.Diamond")){					//If the object we're swapping with player is a diamond
+				placeholder = new Floor();																						//Make that object floor instead
+			}
+			 
 			//if the object we're trying to swap with is a crate, and it can be moved (check the crate can be moved first)
 			if(placeholder.getClass().toString().equals("class GridTest.Crate")) {
 			
@@ -193,6 +197,9 @@ public class Game {
 					MoveableObject placeholder2 = new MoveableObject();
 					placeholder2 = mObjectMap.get(crateNewY).get(crateNewX);								//Gets the object to swap the crate with
 					
+					if(placeholder2.getClass().toString().equals("class GridTest.Diamond")){					//If the object we're swapping with player is a diamond
+						placeholder2 = new Floor();																						//Make that object floor instead
+					}
 					
 					mObjectMap.get(playerNewY).set(playerNewX, mObjectMap.get(playerY).get(playerX));		//set the new location = to player (not new identical object, but existing player)
 					
@@ -210,13 +217,15 @@ public class Game {
 				
 				mObjectMap.get(playerNewY).set(playerNewX, mObjectMap.get(playerY).get(playerX));			//place found player at new index location
 				
-				mObjectMap.get(playerY).set(playerX, placeholder);											//place placeholder object at player's old location
+				mObjectMap.get(playerY).set(playerX, placeholder);											//place placeholder object at player's old location 
 				
 			}
 			
 
 		
 		}//End of if, if conditions aren't met then don't do anything
+		resetDiamonds();
+		mTracker.hasWon();
 	}
 	
 	
@@ -336,6 +345,26 @@ public class Game {
 		
 		return safeToMove;
 	}
+	
+	//if diamond indexes have floor on them, set them to be diamonds
+	public void resetDiamonds() {
+		for(int i = 0 ; i < mTracker.diamondLocations().size();  i++) {
+			
+			int x = mTracker.diamondLocations().get(i).get(0);
+			int y = mTracker.diamondLocations().get(i).get(1);
+			
+			if(mObjectMap.get(y).get(x).getClass().toString().equals("class GridTest.Floor")) {
+				mObjectMap.get(y).set(x, new Diamond());
+			}if(mObjectMap.get(y).get(x).getClass().toString().equals("class GridTest Crate")) {
+				
+				//horrible method chaining but have to get the object for the method for setImage and setImageView method
+				mObjectMap.get(y).get(x).setImageView(mObjectMap.get(y).get(x).setImage("CrateInPlace.png"));
+			}
+			
+		}
+	}
+	
+	
 	
 	
 }

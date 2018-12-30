@@ -20,14 +20,16 @@ public class TileTracker {
 			
 			for(int j = 0; j < gameMap.get(i).size(); j++) {
 				
-				if(gameMap.get(i).get(j).getClass().toString().equals("class GridTest.Floor")) {
+				if(gameMap.get(i).get(j).getClass().toString().equals("class GridTest.Diamond")){
+					
+					
 					ArrayList<Integer> location = new ArrayList<Integer>();
 					
 					location.add(j);	//add X coordinate of diamond
 					location.add(i);	//add Y coordinate of diamond
 					
 					diamondLocations.add(location);
-					System.out.println("X = " + j + ", Y = " + i + " - FOUND!");
+					
 				} if(gameMap.get(i).get(j).getClass().toString().equals("class GridTest.Crate")) {
 					ArrayList<Integer> location = new ArrayList<Integer>();
 					
@@ -35,7 +37,6 @@ public class TileTracker {
 					location.add(i);	//add Y coordinate of diamond
 					
 					crateLocations.add(location);
-					System.out.println("X = " + j + ", Y = " + i + " - FOUND!");
 				} 
 			}
 		}
@@ -45,6 +46,7 @@ public class TileTracker {
 		return diamondLocations;
 	}
 	
+	
 	public void ChangeCratePos(int x, int y, int newX, int newY) {
 		for(int i = 0; i < crateLocations.size(); i++){
 			
@@ -52,21 +54,21 @@ public class TileTracker {
 				
 				crateLocations.get(i).set(0, newX);
 				crateLocations.get(i).set(1, newY);
-				
-				System.out.println(crateLocations.get(i).get(0));
-				System.out.println(crateLocations.get(i).get(1));
 			}
 		}
 	}
 	
+	//returns the crate locations
 	public ArrayList<ArrayList<Integer>> crateLocations() {
 		return crateLocations;
 	}
 	
+	//returns the number of crates on diamonds required to win
 	public int getDiamondsToWinNum() {
 		return diamondsToWin;
 	}
 	
+	//Checks whether the crate image needs to change based on a crate being on a diamond pos
 	public	boolean checkHasCrate(int x, int y) {
 		
 		boolean hasCrate = false;
@@ -74,14 +76,39 @@ public class TileTracker {
 		for(int i = 0; i < diamondLocations.size(); i++) {
 			
 			if(diamondLocations.get(i).get(0) == x && diamondLocations.get(i).get(1) == y) {
-				hasCrate = false;
-			}else {
 				hasCrate = true;
+			}else {
+				hasCrate = false;
 			}
 			
 		}
 		
 		return hasCrate;
+	}
+
+	public boolean hasWon() {
+		
+		int matches = 0;
+		boolean win = false;
+		
+		for(int i = 0; i < diamondLocations.size(); i++) {
+			
+			if(diamondLocations.get(i).get(0) == crateLocations.get(i).get(0)) {			//if x matches
+				
+				if(diamondLocations.get(i).get(1) == crateLocations.get(i).get(1)) {		//and if y matches (easier to read on 2 lines)
+					
+					matches++;
+				}
+			}
+		}
+		
+		if(matches == diamondsToWin) {
+			win = true;
+			System.out.println("you win!");
+		}
+		System.out.println("diamonds = " + diamondLocations.size());
+		System.out.println("Matches = " + matches);
+		return win;
 	}
 
 }
