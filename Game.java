@@ -13,38 +13,40 @@ public class Game {
 	
 	private GridPane grid;
 	private ArrayList<ArrayList<String>> mCharMap;
-	private ArrayList<ArrayList<MoveableObject>> mObjectMap;
-	private MapImporter mMapImporter;
+	private ArrayList<ArrayList<MapObject>> mObjectMap;
 	private TileTracker mTracker;
 	private Text displayMoveNo;
 	private int mNumOfMoves;
+	private boolean haveWon;
+	private Collision collision;
 	
-	public Game(int levelNo) {
-		setStringMap(levelNo);
+	public Game(ArrayList<ArrayList<String>> charMap) {
+		haveWon = false;
+		setStringMap(charMap);
 	
 		setObjectList();
 		mTracker = new TileTracker(mObjectMap);
+		collision = new Collision();
 		
 		setGrid();
 		displayMoveNo = new Text();
 		displayMoveNo.setText("" + mNumOfMoves);
 	}
 	
-	public void setStringMap(int levelNo) {
-		mMapImporter = new MapImporter();
+	public void setStringMap(ArrayList<ArrayList<String>> charMap) {
 		
 		mCharMap = new ArrayList<ArrayList<String>>();
-		mCharMap = mMapImporter.getMap(levelNo);
+		mCharMap = charMap;
 	
 	}
 	
 	public void setObjectList() {
-		mObjectMap = new ArrayList<ArrayList<MoveableObject>>();
-		ArrayList<MoveableObject> lineArray = null;
+		mObjectMap = new ArrayList<ArrayList<MapObject>>();
+		ArrayList<MapObject> lineArray = null;
 		
 		for(int i = 0; i < mCharMap.size(); i++) {
 			
-			lineArray = new ArrayList<MoveableObject>();
+			lineArray = new ArrayList<MapObject>();
 			
 			for(int j = 0; j < mCharMap.get(i).size(); j++) {
 				
@@ -73,7 +75,7 @@ public class Game {
 		
 	}
 	
-	public ArrayList<ArrayList<MoveableObject>> getObjectList(){
+	public ArrayList<ArrayList<MapObject>> getObjectList(){
 		return mObjectMap;
 	}
 	
@@ -148,7 +150,7 @@ public class Game {
 		int playerNewX = playerX;		//Initialise these as equal so that nothing happens if the movement shouldn't happen
 		int playerNewY = playerY;		//same as above
 		
-		if(collisionDetect(direction, playerX, playerY)) {	//If collision says that movement is acceptable, then make changes
+		if(collision.collisionDetect(direction, playerX, playerY, mObjectMap)) {	//If collision says that movement is acceptable, then make changes
 			
 			switch(direction) {
 			
@@ -173,7 +175,7 @@ public class Game {
 				break;
 			}
 			
-			MoveableObject placeholder = new MoveableObject();
+			MapObject placeholder = new MapObject();
 			placeholder = mObjectMap.get(playerNewY).get(playerNewX);									//Get object we want to swap with player
 			
 			if(placeholder.getClass().toString().equals("class GridTest.Diamond")){					//If the object we're swapping with player is a diamond
@@ -183,7 +185,7 @@ public class Game {
 			//if the object we're trying to swap with is a crate, and it can be moved (check the crate can be moved first)
 			if(placeholder.getClass().toString().equals("class GridTest.Crate")) {
 			
-				if(crateCollisionDetect(direction, playerNewX, playerNewY)) {
+				if(collision.crateCollisionDetect(direction, playerNewX, playerNewY, mObjectMap)) {
 					
 					int crateX = playerNewX;			//Crate X for now is still the potential location for the player
 					int crateY = playerNewY;			//Same as above
@@ -207,7 +209,7 @@ public class Game {
 						break;
 					}
 				
-					MoveableObject placeholder2 = new MoveableObject();
+					MapObject placeholder2 = new MapObject();
 					placeholder2 = mObjectMap.get(crateNewY).get(crateNewX);								//Gets the object to swap the crate with
 					
 					if(placeholder2.getClass().toString().equals("class GridTest.Diamond")){					//If the object we're swapping with player is a diamond
@@ -249,126 +251,8 @@ public class Game {
 		}//End of if, if conditions aren't met then don't do anything
 		resetDiamonds();
 		if(mTracker.hasWon()) {
-			System.out.println("You won!");
+			haveWon = true;
 		}
-	}
-	
-	
-	//This doesn't move anything, simply detects that the immediate tile the player is trying to swap with is not a wall
-	public boolean collisionDetect(String direction, int playerX, int playerY) {
-		
-		boolean safeToMove = false;
-		
-		//Gets all objects around player
-		String objectAboveClass = mObjectMap.get(playerY - 1).get(playerX).getClass().toString();
-		String objectBelowClass = mObjectMap.get(playerY + 1).get(playerX).getClass().toString();
-		String objectLeftClass = mObjectMap.get(playerY).get(playerX - 1).getClass().toString();
-		String objectRightClass = mObjectMap.get(playerY).get(playerX + 1).getClass().toString();
-		
-		switch(direction) {
-		
-			case "up":
-				if(playerY > 0 && (!"class GridTest.Wall".equals(objectAboveClass))){
-					safeToMove = true;
-				}
-				break;
-				
-			case "down":
-				if(playerY + 1 < mObjectMap.size() && (!"class GridTest.Wall".equals(objectBelowClass))){		//playerY + 1 because starting at 0 but .size starts count at 1
-					safeToMove = true;
-				}
-				break;
-				
-			case "left":
-				if(playerX > 0 && (!"class GridTest.Wall".equals(objectLeftClass))) {
-					safeToMove = true;
-				}
-				break;
-				
-			case "right":
-				if(playerX + 1 < mObjectMap.get(playerY).size() && (!"class GridTest.Wall".equals(objectRightClass))) {
-					safeToMove = true;
-				}
-				break;
-			}
-		
-		return safeToMove;
-	}
-	
-	//Checks that a crate can be moved
-	public boolean crateCollisionDetect(String direction, int crateX, int crateY) {
-		
-		boolean safeToMove = false;
-		
-		String objectAboveClass = mObjectMap.get(crateY - 1).get(crateX).getClass().toString();
-		String objectBelowClass = mObjectMap.get(crateY + 1).get(crateX).getClass().toString();
-		String objectLeftClass = mObjectMap.get(crateY).get(crateX - 1).getClass().toString();
-		String objectRightClass = mObjectMap.get(crateY).get(crateX + 1).getClass().toString();
-		
-		switch(direction) {
-		
-		case "up":
-	
-			//(applies to all in switch - if crateY is > 0 and the class in the specified direction is NEITHER a wall nor another crate)
-			if(crateY > 0) { 
-				
-				if(!"class GridTest.Wall".equals(objectAboveClass)){
-							
-					if(!"class GridTest.Crate".equals(objectAboveClass)){
-						
-						safeToMove = true;
-							
-					}
-				}
-			}
-			break;
-			
-		case "down":
-			if(crateY + 1 < mObjectMap.size()) {
-				
-				if(!"class GridTest.Wall".equals(objectBelowClass)){
-					
-					if(!"class GridTest.Crate".equals(objectBelowClass)){
-
-						safeToMove = true;		
-						
-					}
-				}
-			}
-			break;
-			
-		case "left":
-			if(crateX > 0){
-				
-				if (!"class GridTest.Wall".equals(objectLeftClass)){
-
-					if(!"class GridTest.Crate".equals(objectLeftClass)){
-						
-						safeToMove = true;
-						
-					}
-				}
-			}
-			break;
-			
-		case "right":
-			
-			//Longest because crate can only move if its less than the length of the row, and neither wall nor crate is to the right of it
-			if((crateX + 1) < mObjectMap.get(crateY).size()) {
-				
-				if(!"class GridTest.Wall".equals(objectRightClass)) {
-						
-					if(!"class GridTest.Crate".equals(objectRightClass)) {
-							
-							safeToMove = true;
-					}
-				}
-			}
-			break;
-			
-		}
-		
-		return safeToMove;
 	}
 	
 	//if diamond indexes have floor on them, set them to be diamonds
@@ -385,6 +269,9 @@ public class Game {
 	}
 	
 	
+public boolean getWin() {
+	return haveWon;
+}
 
 	
 	

@@ -1,6 +1,6 @@
 package GridTest;
 
-public class Diamond extends MoveableObject {
+public class Diamond extends MapObject {
 
 	public Diamond() {
 		mImagePath = "Diamond.png";

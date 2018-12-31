@@ -8,14 +8,14 @@ public class TileTracker {
 	private ArrayList<ArrayList<Integer>> crateLocations;
 	private int diamondsToWin;
 	
-	public TileTracker(ArrayList<ArrayList<MoveableObject>> gameMap) {
+	public TileTracker(ArrayList<ArrayList<MapObject>> gameMap) {
 		diamondLocations = new ArrayList<ArrayList<Integer>>();
 		crateLocations = new ArrayList<ArrayList<Integer>>();
 		countTrackables(gameMap);
 		diamondsToWin = diamondLocations.size(); 
 	}
 	
-	public void countTrackables(ArrayList<ArrayList<MoveableObject>> gameMap) {
+	public void countTrackables(ArrayList<ArrayList<MapObject>> gameMap) {
 		for(int i = 0; i < gameMap.size(); i++) {
 			
 			for(int j = 0; j < gameMap.get(i).size(); j++) {
@@ -54,7 +54,6 @@ public class TileTracker {
 				
 				crateLocations.get(i).set(0, newX);
 				crateLocations.get(i).set(1, newY);
-				System.out.println("CrateNo "+ i +" = " + crateLocations.get(i).get(0) + ", CrateY = " + crateLocations.get(i).get(1));
 			}
 		}
 	}

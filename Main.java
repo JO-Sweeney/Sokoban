@@ -22,6 +22,9 @@ public class Main extends Application{
 	private Button previousLevelButton;
 	private int levelNo;
 	private Scene scene;
+	private Scene winScene;
+	private Text winText;
+	public MapImporter mMapImporter;
 	
 	public static void main(String [] args) {
 		launch(args);
@@ -30,6 +33,7 @@ public class Main extends Application{
 	@Override
 	public void start(Stage window) throws Exception {
 		levelNo = 1;
+		mMapImporter = new MapImporter();
 		mWindow = window;
 		setUI();
 		mWindow.show();
@@ -42,19 +46,26 @@ public class Main extends Application{
 		restartButton = new Button("Restart Level");
 		previousLevelButton = new Button("Previous Level");
 		nextLevelButton = new Button("Next Level");
-		game = new Game(levelNo);
+		game = new Game(mMapImporter.getMap(levelNo));
+		winText = new Text();
+		winText.setText("Level Complete!");
+		
 		
 		restartButton.setOnAction(e -> {
 			setUI();
 		});
 		
 		previousLevelButton.setOnAction(e -> {
-			levelNo--; 
+			if(levelNo > 1) {
+				levelNo--; 
+			}
 			setUI();
 		});
 		
 		nextLevelButton.setOnAction(e -> {
-			levelNo++;
+			if(levelNo < 5) {
+				levelNo++;
+			}
 			setUI();
 		});
 		
@@ -77,19 +88,35 @@ public class Main extends Application{
 		    if (e.getCode() == KeyCode.W) {
 		    	game.moveObject("up");
 		    	game.updateMoveDisplay();
+		    	if(game.getWin()) {
+		    		mBorderPane.setCenter(winText);
+		    	}else {
 		    	game.updateGrid();
+		    	}
 		    }else if(e.getCode() == KeyCode.A) {
 		    	game.moveObject("left");
 		    	game.updateMoveDisplay();
+		    	if(game.getWin()) {
+		    		mBorderPane.setCenter(winText);
+		    	}else {
 		    	game.updateGrid();
+		    	}
 		    }else if(e.getCode() == KeyCode.S) {
 		    	game.moveObject("down");
 		    	game.updateMoveDisplay();
+		    	if(game.getWin()) {
+		    		mBorderPane.setCenter(winText);
+		    	}else {
 		    	game.updateGrid();
+		    	}
 		    }else if(e.getCode() == KeyCode.D) {
 		    	game.moveObject("right");
 		    	game.updateMoveDisplay();
+		    	if(game.getWin()) {
+		    		mBorderPane.setCenter(winText);
+		    	}else {
 		    	game.updateGrid();
+		    	}
 		    }
 		});
 		

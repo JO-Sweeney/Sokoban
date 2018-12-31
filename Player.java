@@ -1,6 +1,6 @@
 package GridTest;
 
-public class Player extends MoveableObject {
+public class Player extends MapObject {
 
 	public Player() {
 		mImagePath = "Player.png";

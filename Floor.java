@@ -1,6 +1,6 @@
 package GridTest;
 
-public class Floor extends MoveableObject {
+public class Floor extends MapObject {
 	
 	
 	public Floor() {
