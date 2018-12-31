@@ -1,14 +1,27 @@
 package GridTest;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class Main extends Application{
 	
-	public Game game;
-	public Stage mWindow;
+	private Game game;
+	private Stage mWindow;
+	private BorderPane mBorderPane;
+	private HBox mMenu;
+	private Button restartButton;
+	private Button nextLevelButton;
+	private Button previousLevelButton;
+	private int levelNo;
+	private Scene scene;
 	
 	public static void main(String [] args) {
 		launch(args);
@@ -16,31 +29,71 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage window) throws Exception {
-		
+		levelNo = 1;
 		mWindow = window;
+		setUI();
+		mWindow.show();
+	}
+	
+	public void setUI() {
 		
-		game = new Game();
+		mMenu = new HBox();
+		mBorderPane = new BorderPane();
+		restartButton = new Button("Restart Level");
+		previousLevelButton = new Button("Previous Level");
+		nextLevelButton = new Button("Next Level");
+		game = new Game(levelNo);
 		
-		Scene scene = new Scene(game.getGrid());
+		restartButton.setOnAction(e -> {
+			setUI();
+		});
+		
+		previousLevelButton.setOnAction(e -> {
+			levelNo--; 
+			setUI();
+		});
+		
+		nextLevelButton.setOnAction(e -> {
+			levelNo++;
+			setUI();
+		});
+		
+		mMenu.getChildren().add(restartButton);
+		mMenu.getChildren().add(previousLevelButton);
+		mMenu.getChildren().add(nextLevelButton);
+		
+		mBorderPane.setTop(mMenu);
+		mBorderPane.setCenter(game.getGrid());									//center of borderpane is whatever game returns as grid
+		mBorderPane.setBottom(game.getMoveDisplay());						//bottom of borderpane is whatever game returns as text - moveNo
+		
+		
+		mBorderPane.setAlignment(game.getMoveDisplay(), Pos.CENTER);
+		mBorderPane.setAlignment(mMenu, Pos.CENTER);
+		
+		
+		scene = new Scene(mBorderPane);
 		
 		scene.setOnKeyPressed(e -> {														//Src = https://stackoverflow.com/questions/33224161/how-do-i-run-a-function-on-a-specific-key-press-in-javafx
 		    if (e.getCode() == KeyCode.W) {
 		    	game.moveObject("up");
+		    	game.updateMoveDisplay();
 		    	game.updateGrid();
 		    }else if(e.getCode() == KeyCode.A) {
 		    	game.moveObject("left");
+		    	game.updateMoveDisplay();
 		    	game.updateGrid();
 		    }else if(e.getCode() == KeyCode.S) {
 		    	game.moveObject("down");
+		    	game.updateMoveDisplay();
 		    	game.updateGrid();
 		    }else if(e.getCode() == KeyCode.D) {
 		    	game.moveObject("right");
+		    	game.updateMoveDisplay();
 		    	game.updateGrid();
 		    }
 		});
 		
-		window.setScene(scene);
-		window.show();
+		mWindow.setScene(scene);
 	}
 
 }

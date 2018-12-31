@@ -54,6 +54,7 @@ public class TileTracker {
 				
 				crateLocations.get(i).set(0, newX);
 				crateLocations.get(i).set(1, newY);
+				System.out.println("CrateNo "+ i +" = " + crateLocations.get(i).get(0) + ", CrateY = " + crateLocations.get(i).get(1));
 			}
 		}
 	}
@@ -69,46 +70,48 @@ public class TileTracker {
 	}
 	
 	//Checks whether the crate image needs to change based on a crate being on a diamond pos
-	public	boolean checkHasCrate(int x, int y) {
+	public	boolean checkPlacedCrate(int x, int y) {
 		
-		boolean hasCrate = false;
+		boolean placedCrate = false;
 		
 		for(int i = 0; i < diamondLocations.size(); i++) {
 			
 			if(diamondLocations.get(i).get(0) == x && diamondLocations.get(i).get(1) == y) {
-				hasCrate = true;
-			}else {
-				hasCrate = false;
+				placedCrate = true;
 			}
 			
 		}
 		
-		return hasCrate;
+		return placedCrate;
 	}
 
+	
 	public boolean hasWon() {
 		
-		int matches = 0;
+		int matched = 0;
 		boolean win = false;
 		
 		for(int i = 0; i < diamondLocations.size(); i++) {
-			
-			if(diamondLocations.get(i).get(0) == crateLocations.get(i).get(0)) {			//if x matches
 				
-				if(diamondLocations.get(i).get(1) == crateLocations.get(i).get(1)) {		//and if y matches (easier to read on 2 lines)
+				for(int j = 0; j < crateLocations.size(); j++) {
 					
-					matches++;
+					if(diamondLocations.get(i).get(0) == crateLocations.get(j).get(0)) {
+						
+						if(diamondLocations.get(i).get(1) == crateLocations.get(j).get(1)){
+							
+							matched++;
+						}
+						
+					}
+					
 				}
-			}
 		}
 		
-		if(matches == diamondsToWin) {
+		if(matched == diamondsToWin) {
 			win = true;
-			System.out.println("you win!");
 		}
-		System.out.println("diamonds = " + diamondLocations.size());
-		System.out.println("Matches = " + matches);
+		
 		return win;
 	}
-
+	
 }

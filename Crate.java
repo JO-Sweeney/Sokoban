@@ -7,11 +7,6 @@ public class Crate extends MoveableObject {
 		mImagePath = "Crate.png";
 		setImageView(setImage());
 	}
-	
-	public void setPath(String newPath) {
-		mImagePath = newPath;
-	}
-	
-	
+
 	
 }

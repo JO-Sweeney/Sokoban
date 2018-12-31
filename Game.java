@@ -4,6 +4,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,22 +16,25 @@ public class Game {
 	private ArrayList<ArrayList<MoveableObject>> mObjectMap;
 	private MapImporter mMapImporter;
 	private TileTracker mTracker;
+	private Text displayMoveNo;
+	private int mNumOfMoves;
 	
-	public Game() {
-		setStringMap();
+	public Game(int levelNo) {
+		setStringMap(levelNo);
 	
 		setObjectList();
 		mTracker = new TileTracker(mObjectMap);
 		
 		setGrid();
-		
+		displayMoveNo = new Text();
+		displayMoveNo.setText("" + mNumOfMoves);
 	}
 	
-	public void setStringMap() {
+	public void setStringMap(int levelNo) {
 		mMapImporter = new MapImporter();
 		
 		mCharMap = new ArrayList<ArrayList<String>>();
-		mCharMap = mMapImporter.getMap(1);
+		mCharMap = mMapImporter.getMap(levelNo);
 	
 	}
 	
@@ -108,12 +113,20 @@ public class Game {
 				grid.add(imgPlaceholder, X, Y);
 			}
 		}
-
 	}
 	
 	public GridPane getGrid() {
 		return grid;
 	}
+	
+	public void updateMoveDisplay() {
+		displayMoveNo.setText("" + mNumOfMoves);
+	}
+	
+	public Text getMoveDisplay() {
+		return displayMoveNo;
+	}
+	
 	
 	
 	public void moveObject(String direction) {
@@ -209,6 +222,15 @@ public class Game {
 					
 					mTracker.ChangeCratePos(crateX, crateY, crateNewX, crateNewY);
 					
+					mNumOfMoves++;					//move was successful so add 1 move
+					
+					if(mTracker.checkPlacedCrate(crateNewX, crateNewY)){
+						mObjectMap.get(crateNewY).get(crateNewX).setPath("CrateInPlace.png");
+						mObjectMap.get(crateNewY).get(crateNewX).setImageView();
+					}else {
+						mObjectMap.get(crateNewY).get(crateNewX).setPath("Crate.png");				//just in case - potential of crate moving off diamonds
+						mObjectMap.get(crateNewY).get(crateNewX).setImageView();
+					}
 				}else {
 					//Do not move
 				}
@@ -219,13 +241,16 @@ public class Game {
 				
 				mObjectMap.get(playerY).set(playerX, placeholder);											//place placeholder object at player's old location 
 				
+				mNumOfMoves++;						//move was successful so add 1 more
 			}
 			
 
 		
 		}//End of if, if conditions aren't met then don't do anything
 		resetDiamonds();
-		mTracker.hasWon();
+		if(mTracker.hasWon()) {
+			System.out.println("You won!");
+		}
 	}
 	
 	
@@ -355,15 +380,12 @@ public class Game {
 			
 			if(mObjectMap.get(y).get(x).getClass().toString().equals("class GridTest.Floor")) {
 				mObjectMap.get(y).set(x, new Diamond());
-			}if(mObjectMap.get(y).get(x).getClass().toString().equals("class GridTest Crate")) {
-				
-				//horrible method chaining but have to get the object for the method for setImage and setImageView method
-				mObjectMap.get(y).get(x).setImageView(mObjectMap.get(y).get(x).setImage("CrateInPlace.png"));
 			}
-			
 		}
 	}
 	
+	
+
 	
 	
 	
